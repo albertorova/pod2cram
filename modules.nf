@@ -52,14 +52,13 @@ process ALIGN {
     """
     export LD_LIBRARY_PATH=${params.dorado_folder}/lib/
     ${params.dorado_folder}/bin/dorado aligner ${params.genome} ${bam} \
-        --mm2-opts "--secondary=no" \
+        --mm2-opts "-x map-ont -Y --secondary no" \
         -t ${task.cpus} > ${name}.bam
     """
 }
 
-process SORT_BAM {
+process SORT_INDEX_BAM {
     tag "${name}"
-    publishDir "results/0-CRAM/", mode: 'copy' 
 
     conda '/home/longseqservice/miniforge3/envs/samtools_bcftools_bedtools_htslib'
 
@@ -67,11 +66,13 @@ process SORT_BAM {
     tuple val(name), path(bam)
 
     output:
-    tuple val(name), path("${name}_sorted.bam"), emit: output
+    tuple val(name), path("${name}.sorted.bam"), path("${name}.sorted.bam.bai"), emit: output
 
     script:
     """
-    samtools sort -@ ${task.cpus} -o ${name}_sorted.bam ${bam}
+    samtools sort -@ ${task.cpus} -o ${name}.sorted.bam ${bam}
+
+    samtools index -@ ${task.cpus} ${name}.sorted.bam
     """
 }
 
