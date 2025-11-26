@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 
-include { BASECALL ; DEMUX ; ALIGN ; SORT_BAM ; BAM2CRAM } from './modules.nf'
+include { BASECALL ; DEMUX ; ALIGN ; SORT_INDEX_BAM ; BAM2CRAM } from './modules.nf'
 
 workflow {
 
@@ -22,9 +22,9 @@ workflow {
 
     ALIGN(ch_filtered_bams)    
 
-    SORT_BAM(ALIGN.out.output)
+    SORT_INDEX_BAM(ALIGN.out.output)
     
-    BAM2CRAM(SORT_BAM.out.output)
+    BAM2CRAM(SORT_INDEX_BAM.out.output)
 
 }
 
